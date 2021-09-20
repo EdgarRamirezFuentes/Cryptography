@@ -8,7 +8,7 @@ key = get_random_bytes(8)
 # The DES cipher mode operation will be Cipher-Block Chaining (CBC)
 encryption_cipher = DES.new(key, DES.MODE_CBC)
 
-# This cipher accept only 8*n bytes
+# The CBC mode only accepts 8*n bytes to be encrypted
 # It DOES NOT accept strings
 
 # Get the message
