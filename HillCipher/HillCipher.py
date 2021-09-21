@@ -82,6 +82,7 @@ class HillCipher:
         # data[ciphertext, encryption key, size of the message without padding]
         data = self.__get_data(filename, size_of_the_key)
         ciphertext = data[0]
+        print(f"The encrypted message is: {ciphertext}")
         encryption_key = sp.Matrix(data[1])
         determinant_value = sp.det(encryption_key)
         inverse_matrix = encryption_key.inv()
@@ -104,7 +105,7 @@ class HillCipher:
         print(f"The decrypted message is: {plaintext[:size_of_the_plaintext]}")
 
 
-    def __divide_text(self, text : str, division_size : int) -> list[list[int]]:
+    def __divide_text(self, text : str, division_size : int) -> list:
         '''
             Divide a text into blocks that contain division_size integers, which are the indexes of the characters in the alphabet. It adds random numbers as padding to the last block if it is needed\n
             Example:\n
@@ -172,7 +173,7 @@ class HillCipher:
         self.__write_file(filename, ciphertext, encryption_key, len(plaintext))
 
 
-    def __write_file(self, filename : str, ciphertext : str, encryption_key : list[list[int]], plaintext_size : int):
+    def __write_file(self, filename : str, ciphertext : str, encryption_key : list, plaintext_size : int):
         '''
             Create a text file named as filename and write the ciphertext, encryption_key, and plaintext_size using the following format:\n
             5\n
@@ -213,7 +214,7 @@ class HillCipher:
                 file.write("\n")
 
 
-    def __get_data(self, filename : str, size_of_the_key : int) -> list[str, list[list[int], int]]:
+    def __get_data(self, filename : str, size_of_the_key : int):
         '''
             Get the necessary data to decrypt a message from a text file 
             Parameters
@@ -242,7 +243,7 @@ class HillCipher:
         return [ciphertext, encryption_key, plaintext_size]
 
 
-    def __generate_encryption_key(self, size_of_the_key : int) -> list[list[int]]:
+    def __generate_encryption_key(self, size_of_the_key : int) -> list:
         '''
             Generate a valid Hill Cipher square matrix key to encrypt a message\n
             Requirements of a valid Hill Cipher square matrix:
@@ -270,8 +271,8 @@ class HillCipher:
                 break
         return encryption_key
 
-'''
-Section used to test the class
+
+# Section used to test the class
 if __name__ == "__main__":
     alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', ' ']
     cipher = HillCipher(alphabet)
@@ -280,4 +281,4 @@ if __name__ == "__main__":
     cipher.encrypt_message(text, size_of_the_key)
     filename = input("Name of the file that cointains the data: ")
     cipher.decrypt_message(filename, size_of_the_key)
-'''
+
