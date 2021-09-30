@@ -1,7 +1,92 @@
 from Crypto.Cipher import DES3
+from Crypto.Util import Padding
 from Crypto.Random import get_random_bytes
 import math
 import base64
+import random
+
+
+def get_permutation ():
+    '''
+        Generates a permutation for a byte
+
+        Return
+        --------
+        permutation : list
+            It is a list that contains the permutation
+    '''
+    permutation = list(range(8))
+    random.shuffle(permutation)
+    return permutation
+
+
+def bit_is_turned_on (key : bytes, bit_position : int):
+    '''
+        Check if the ith bit is turned on
+        The bit most to the left is the Most Significant Bit
+
+        Parameter
+        --------
+        key : bytes
+            It is the key (byte) that will analyzed to get the status of the ith bit
+        
+        bit_position : int
+            It is the the position of the bit that will be checked
+            The bot most to the left has the position 0.
+        
+        Return 
+        --------
+        key_value : int
+            It is the value of the key after the AND operation.
+            If the ith bit was turned off, its value will be 0, otherwise will be different than 0
+        
+    '''
+    return key & 1 << bit_position
+
+
+def turn_bit_on (key: bytes, bit_position : int):
+    '''
+        Turn the ith bit of the key on.
+
+        Parameters
+        --------
+        key : bytes
+            It is the key (byte) that will modified
+        
+        bit_position : int
+            bit_position : int
+            It is the the position of the bit that will be turned on
+            The bot most to the left has the position 0.
+    '''
+    return key | (1 << bit_position)
+
+
+def permutate_key (key : bytes, permutation : list):
+    '''
+        Permutate a key depending on the given permutation
+
+        Parameters
+        --------
+        key : bytes
+            It is the key that will be modified
+        
+        permutation : list
+            It is the permutation that will be used to permutate the key
+
+        Return
+        --------
+        permutated_key : list
+            It is the result of permutate the received key
+    '''
+    key = int.from_bytes(key, "big")
+    permutated_key = 0
+    for index, value in enumerate(permutation):
+        bit_position = 7 - value
+        if bit_is_turned_on(key, bit_position) != 0:
+            new_bit_position = 7 - index
+            permutated_key = turn_bit_on(permutated_key, new_bit_position)
+    return permutated_key
+
 
 def generate_file (filename : str, data : bytes):
     '''
@@ -154,6 +239,6 @@ def EDE_decryption(encrypted_data_filename : str, key_filename : str, initializa
     with open(decrypted_data_filename, mode="w") as decrypted_data_file:
         decrypted_data_file.write(decrypted_data.decode("utf-8"))
 
-# testing section
-EDE_encryption("test.txt")
-EDE_decryption("test.txt.des", "k.txt", "i.txt")
+
+if __name__ == "__main__":
+    pass
