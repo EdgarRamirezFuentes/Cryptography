@@ -33,7 +33,7 @@ class HillCipher:
         self.__letter_to_index = dict(zip(self.__alphabet, range(len(self.__alphabet))))
         self.__index_to_letter = dict(zip(range(len(self.__alphabet)), alphabet))
     
-    def __extended_euclidean_algorithm(self, x : int) -> int:
+    def extended_euclidean_algorithm(self, x : int) -> int:
         '''
             Calculate the multiplicative inverse of x.
 
@@ -49,7 +49,7 @@ class HillCipher:
         '''
         size_of_alphabet = len(self.__alphabet)
         u = x
-        v = size_of_alphabet 
+        v = 17
         x1 = 1
         x2 = 0
         try:
@@ -61,10 +61,11 @@ class HillCipher:
                 u = r
                 x2 = x1
                 x1 = x
+                print(f"q {q} r {r} x {x} u {u} v {v} x1 {x1} x2 {x2}")
         except:
             return -1
 
-        return int(x1 % size_of_alphabet)
+        return int(x1 % 17)
 
     def decrypt_message(self, filename : str, size_of_the_key : int):
         '''
@@ -276,9 +277,10 @@ class HillCipher:
 if __name__ == "__main__":
     alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', ' ']
     cipher = HillCipher(alphabet)
-    text = input("Message: ")
+    print(cipher.extended_euclidean_algorithm(13))
+    ''' text = input("Message: ")
     size_of_the_key = int(input("Size of the key: "))
     cipher.encrypt_message(text, size_of_the_key)
     filename = input("Name of the file that cointains the data: ")
-    cipher.decrypt_message(filename, size_of_the_key)
+    cipher.decrypt_message(filename, size_of_the_key)'''
 
