@@ -1,7 +1,6 @@
-from Crypto.Cipher import DES3
-from Crypto.Util import Padding
+from Crypto.Cipher import DES, DES3
+from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
-import math
 import base64
 import random
 
@@ -20,7 +19,7 @@ def get_permutation ():
     return permutation
 
 
-def bit_is_turned_on (key : bytes, bit_position : int):
+def is_bit_turned_on (key : bytes, bit_position : int):
     '''
         Check if the ith bit is turned on
         The bit most to the left is the Most Significant Bit
@@ -82,7 +81,7 @@ def permutate_key (key : bytes, permutation : list):
     permutated_key = 0
     for index, value in enumerate(permutation):
         bit_position = 7 - value
-        if bit_is_turned_on(key, bit_position) != 0:
+        if is_bit_turned_on(key, bit_position) != 0:
             new_bit_position = 7 - index
             permutated_key = turn_bit_on(permutated_key, new_bit_position)
     return permutated_key
@@ -168,57 +167,31 @@ def generate_key(length_of_the_key : int):
     return key
 
 
-def add_padding(data : bytes):
-    '''
-        Add padding to the byte message if it is necessary
-        Note: CBC splits the data in blocks of size 8
-        Parameters
-        ----------------
-        data : bytes
-            It is the data (in bytes) that will be encrypted
-
-        Return
-        ----------------
-        data : bytes
-            It is the data with the needed padding added
-    '''
-    if len(data) % 8 != 0:
-        data_length = len(data)
-        padding = (8 * (math.floor(data_length / 8 + 1))) - data_length
-        # Add the necessary padding to the data
-        data += bytes((" " * padding), "utf-8")
-    return data
-
-
 def EDE_encryption(data_filename : str):
     '''
-        Encrypt the content of the desired file, create a file that contains the key used to encrypt the data, create a file that contains the encrypted content, and create a file that contains the 
-        initialization vector of the encryption cipher.
-
+        Encrypt the content of the desired file, create a file that contains the key used to encrypt the data, and create a file that contains the encrypted content.
+        Note: This data is encrypted using the EDE variant of Triple DES.
         Parameters
         ----------------
         data_filename : str
             It is the name of the file that contains the data that will be encrypted
     '''
-    data = bytes(read_data_file(data_filename).strip(), "utf-8")
-    data = add_padding(data)
-    encryption_key = generate_key(24)
-    key_filename = input("Input the filename (add the .txt extension) of the file where the key will be stored (Example: data_key.txt): ")
-    generate_file(key_filename, encryption_key)
-
-    EDE_cipher = DES3.new(encryption_key, DES3.MODE_CBC)
-    encrypted_data  = EDE_cipher.encrypt(data)
-    generate_file(data_filename + ".des", encrypted_data)
-
-    initialization_vector_filename = input("Input the filename (add the .txt extension of the file where the initialization vector will be stored (Example: initialization_vector.txt): ")
-    generate_file(initialization_vector_filename, EDE_cipher.iv)
+    try:
+        data = pad(bytes(read_data_file(data_filename).strip(), "utf-8"), 8)
+        encryption_key = generate_key(24)
+        key_filename = input("Input the filename (add the .txt extension) of the file where the key will be stored (Example: data_key.txt): ")
+        generate_file(key_filename, encryption_key)
+        EDE_cipher = DES3.new(encryption_key, DES3.MODE_ECB)
+        encrypted_data  = EDE_cipher.encrypt(data)
+        generate_file(data_filename + ".des", encrypted_data)
+    except:
+        print("Something went wrong")
 
 
-def EDE_decryption(encrypted_data_filename : str, key_filename : str, initialization_vector_filename : str):
+def EDE_decryption(encrypted_data_filename : str, key_filename : str):
     '''
-        Decrypt the content of the desired file, get the decryption key from the desired file, get the initialization vector from the desired file, and create a file that contains the
-        decrypted data
-
+        Decrypt the content of the desired file, get the decryption key from the desired file, and create a file that contains the decrypted data\n
+        Note: This data is decrypted using the EDE variant of Triple DES. Thus, the content of the file must have been encrypted using the EDE variant of Tiple DES.
         Parameters
         ----------------
         encrypted_data_filename : str
@@ -226,19 +199,78 @@ def EDE_decryption(encrypted_data_filename : str, key_filename : str, initializa
 
         key_filename : str
             It is the name of the file that contains the decryption file
+    '''
+    try:
+        encrypted_data = read_base64_file(encrypted_data_filename)
+        decryption_key = read_base64_file(key_filename)
+        EDE_decipher = DES3.new(decryption_key, DES3.MODE_ECB)
+        decrypted_data = EDE_decipher.decrypt(encrypted_data)
+        decrypted_data_filename = input("Input the filename (add the .txt extension) of the file where the decrypted data will be stored (Example: decrypted_data.txt): ")
+        # Write the decrypted data (with no padding) in the text file
+        with open(decrypted_data_filename, mode="w") as decrypted_data_file:
+            decrypted_data_file.write(unpad(decrypted_data, 8).decode("utf-8"))
+    except:
+        print("Something went wrong")
 
-        initialization_vector_filename : str
-            It is the name of the file that contains the initialization vector
+
+def EEE_encryption(data_filename : str, ):
+    '''
+        Encrypt the content of the desired file, create a file that contains the key used to encrypt the data, and create a file that contains the encrypted content.
+        Note: This data is encrypted using the EEE variant of Triple DES.
+        Parameters
+        ----------------
+        data_filename : str
+            It is the name of the file that contains the data that will be encrypted
+    '''
+    try:
+        data = pad(bytes(read_data_file(data_filename).strip(), "utf-8"), 8)
+        encryption_key = get_random_bytes(8)
+        key_filename = input("Input the filename (add the .txt extension) of the file where the key will be stored (Example: data_key.txt): ")
+        generate_file(key_filename, encryption_key)
+        EEE_cipher = DES.new(encryption_key, DES.MODE_ECB)
+        #  Encryption process
+        E1  = EEE_cipher.encrypt(data)
+        cipher = DES.new(encryption_key, DES.MODE_ECB)
+        E2 = cipher.encrypt(E1)
+        cipher2 = DES.new(encryption_key, DES.MODE_ECB)
+        E3 = cipher2.encrypt(E2)
+        generate_file(data_filename + ".des", E3)
+    except:
+        print("Something went wrong")
+
+
+def EEE_decryption(encrypted_data_filename : str, key_filename : str):
+    '''
+        Decrypt the content of the desired file, get the decryption key from the desired file, and create a file that contains the decrypted data\n
+        Note: This data is decrypted using the EEE variant of Triple DES. Thus, the content of the file must have been encrypted using the EEE variant of Tiple DES.
+        Parameters
+        ----------------
+        encrypted_data_filename : str
+            It is the name of the file that contains the encrypted data
+
+        key_filename : str
+            It is the name of the file that contains the decryption file
     '''
     encrypted_data = read_base64_file(encrypted_data_filename)
     decryption_key = read_base64_file(key_filename)
-    initialization_vector = read_base64_file(initialization_vector_filename)
-    EDE_decipher = DES3.new(decryption_key, DES3.MODE_CBC, initialization_vector)
-    decrypted_data = EDE_decipher.decrypt(encrypted_data)
+    decipher = DES.new(decryption_key, DES.MODE_ECB)
+    # Decryption process
+    D1 = decipher.decrypt(encrypted_data)
+    decipher2 = DES.new(decryption_key, DES.MODE_ECB)
+    D2 = decipher2.decrypt(D1)
+    decipher3 = DES.new(decryption_key, DES.MODE_ECB)
+    D3 = decipher3.decrypt(D2)
     decrypted_data_filename = input("Input the filename (add the .txt extension) of the file where the decrypted data will be stored (Example: decrypted_data.txt): ")
+    # Write the decrypted data (with no padding) in the text file
     with open(decrypted_data_filename, mode="w") as decrypted_data_file:
-        decrypted_data_file.write(decrypted_data.decode("utf-8"))
+        decrypted_data_file.write(unpad(D3, 8).decode("utf-8"))
+
+
+
+
 
 
 if __name__ == "__main__":
+    EDE_encryption("test.txt")
+    EDE_decryption("test.txt.des", "key.txt")
     pass
