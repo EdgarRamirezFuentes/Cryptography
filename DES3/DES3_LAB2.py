@@ -74,17 +74,21 @@ def permutate_key (key : bytes, permutation : list):
 
         Return
         --------
-        permutated_key : list
+        permutated_key : bytes
             It is the result of permutate the received key
     '''
+    # Transform the bytes key into an int key to be able to manipulate its bits
     key = int.from_bytes(key, "big")
+    # This is going to be the new key, which will contain all the permutations
     permutated_key = 0
     for index, value in enumerate(permutation):
         bit_position = 7 - value
+        # Only turn a bit on if necessary
         if is_bit_turned_on(key, bit_position) != 0:
             new_bit_position = 7 - index
             permutated_key = turn_bit_on(permutated_key, new_bit_position)
-    return permutated_key
+    # Return the permutated key as bytes
+    return permutated_key.to_bytes(1, "big")
 
 
 def generate_file (filename : str, data : bytes):
@@ -271,6 +275,7 @@ def EEE_decryption(encrypted_data_filename : str, key_filename : str):
 
 
 if __name__ == "__main__":
-    EDE_encryption("test.txt")
-    EDE_decryption("test.txt.des", "key.txt")
+    key = get_random_bytes(1)
+    permutation = get_permutation()
+    print(permutate_key(key, permutation))
     pass
