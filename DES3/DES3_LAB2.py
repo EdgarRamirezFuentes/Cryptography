@@ -81,6 +81,11 @@ def permutate_key (key : bytes, permutation : list):
     key = int.from_bytes(key, "big")
     # This is going to be the new key, which will contain all the permutations
     permutated_key = 0
+    print("Original key: ")
+    for i in range(7, -1, -1):
+        print("0", end="") if is_bit_turned_on(key, i) == 0 else print("1", end="")
+    
+    print(f"\nPermutation list {permutation}")
     for index, value in enumerate(permutation):
         bit_position = 7 - value
         # Only turn a bit on if necessary
@@ -88,6 +93,9 @@ def permutate_key (key : bytes, permutation : list):
             new_bit_position = 7 - index
             permutated_key = turn_bit_on(permutated_key, new_bit_position)
     # Return the permutated key as bytes
+    print("Permutated key: ")
+    for i in range(7, -1, -1):
+        print("0", end="") if is_bit_turned_on(permutated_key, i) == 0 else print("1", end="")
     return permutated_key.to_bytes(1, "big")
 
 
@@ -277,5 +285,4 @@ def EEE_decryption(encrypted_data_filename : str, key_filename : str):
 if __name__ == "__main__":
     key = get_random_bytes(1)
     permutation = get_permutation()
-    print(permutate_key(key, permutation))
     pass
