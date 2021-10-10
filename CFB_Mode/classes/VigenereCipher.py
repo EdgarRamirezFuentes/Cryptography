@@ -1,4 +1,5 @@
 import random
+import textwrap
 
 class VigenereCipher:
     '''
@@ -29,10 +30,13 @@ class VigenereCipher:
                 It is  result of encrypting the plaintext using the key
         '''
         encrypted_text = ""
-        for index, letter in enumerate(letters):
-            key_index = self.__letter_to_index[key[index]]
-            letter_index = self.__letter_to_index[letter]
-            encrypted_text += self.__index_to_letter[(letter_index + key_index) % len(self.__alphabet)]
+        # Split up the letters in blocks of size of the key
+        letters = textwrap.wrap(letters, len(key))
+        for block in letters:
+            for index, letter in enumerate(block):
+                key_index = self.__letter_to_index[key[index]]
+                letter_index = self.__letter_to_index[letter]
+                encrypted_text += self.__index_to_letter[(letter_index + key_index) % len(self.__alphabet)]
         return encrypted_text
 
 
