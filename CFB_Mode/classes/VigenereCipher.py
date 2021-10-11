@@ -1,4 +1,12 @@
-import random
+'''
+	Name: VigenereCipher.py
+	Laboratory 3 - Modes of operation
+    Authors: 
+		* María José Salmerón Contreras 
+		* Edgar Alejandro Ramírez Fuentes
+
+    Using Vigenere cipher and CFB Mode encipher and decipher a 500 characters text (English alphabet).
+'''
 import textwrap
 
 class VigenereCipher:

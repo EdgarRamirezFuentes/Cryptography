@@ -1,4 +1,13 @@
-from os import write
+'''
+	Name: CFB_Mode.py
+	Laboratory 3 - Modes of operation
+    Authors: 
+		* María José Salmerón Contreras 
+		* Edgar Alejandro Ramírez Fuentes
+
+    Using Vigenere cipher and CFB Mode encipher and decipher a 500 characters text (English alphabet).
+'''
+
 from .VigenereCipher import VigenereCipher
 import random
 import textwrap
@@ -178,8 +187,10 @@ class CFB_Mode:
         
         iv = self.__iv
 
+
         # Store the keys needed to decrypt the message
-        self.__write_text("keys.txt", self.__iv + "&" + self.__key)
+        keys_filename = input("Input the filename (with extension) that will store the keys: ")
+        self.__write_text(keys_filename, self.__iv + "&" + self.__key)
 
         # Store the encrypted text
         encrypted_text = ""
@@ -210,8 +221,9 @@ class CFB_Mode:
             # Add & to split each block in the decryption process
             encrypted_text += block + "&"
 
-            # Store the encrypted text without the last &
-            self.__write_text("encrypted.txt", encrypted_text[:-1])
+        # Store the encrypted text without the last &
+        encrypted_filename = input("Input the filename (with extension) that will store the encrypted text: ")
+        self.__write_text(encrypted_filename, encrypted_text[:-1])
             
 
 
@@ -267,8 +279,9 @@ class CFB_Mode:
 				# Transform from int to char
                 decrypted_text += chr(letter)
             
-            # Write the decripted text in a textfile
-            self.__write_text("decrypted.txt", decrypted_text)
+        # Write the decripted text in a textfile
+        decrypted_filename = input("Input the filename (with extension) that will store the decrypted text: ")
+        self.__write_text(decrypted_filename, decrypted_text)
 
 
 
