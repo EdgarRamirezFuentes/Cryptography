@@ -1,10 +1,13 @@
 '''
-    Author: María José Salmerón Contreras & Edgar Alejandro Ramírez Fuentes
-    LABORATORY 3.
+	Name: CBC_Mode.py
+	Laboratory 3 - Modes of operation
+    Authors: 
+		* María José Salmerón Contreras 
+		* Edgar Alejandro Ramírez Fuentes
+
     Using Vigenere cipher and CBC Mode encipher and decipher a 500 characters text (English alphabet).
 '''
-#from Crypto.Cipher.DES3 import block_size
-#from Crypto.Random import get_random_bytes
+
 import math
 import textwrap
 import random
@@ -19,7 +22,7 @@ class CBC_Mode:
 		'''
 		self.__iv = self.__charGenerator(10)
 		# Key used for Vigenere cipher
-		self.__key = None
+		self.__key = self.__charGenerator(10)
 
 
 	def get_key(self):
@@ -180,6 +183,11 @@ class CBC_Mode:
 		# Plaintext divided in blocks
 		plaintext = self.__read_plaintext(filename)
 		
+		# Store the necessary keys to decrypt the message
+		keys = self.__iv + "&" + self.__key
+		keys_filename = input("Input the filename (with extension) that will store the keys: ")
+		self.__writeText(keys_filename, keys)
+
 		# IV is the value that will be XORed with each block
 		iv = self.__iv
 		# Store the encrypted text
@@ -203,11 +211,11 @@ class CBC_Mode:
 			block = block.decode()[:-2]
 			
 			# Generate a valid key for vigenere and write in a textfile the keys for the decrytion process
-			if not self.__key:
+			'''if not self.__key:
 				self.__key = self.__charGenerator(len(block))
 				keys = self.__iv + "&" + self.__key
 				self.__writeText("keys.txt", keys)
-			
+			'''
 			# Get Ci
 			block = vigenere_cipher.encrypt(block, self.__key)
 
@@ -219,7 +227,8 @@ class CBC_Mode:
 			# Concatenate the block to the string that contains all the encrypted blocks
 			encrypted_text += block
 		# Write the encrypted text in a textfile without the last &
-		self.__writeText("encrypted.txt", encrypted_text[:-1])
+		encrypted_filename = input("Input the filename (with extension) that will store the encrypted text: ")
+		self.__writeText(encrypted_filename, encrypted_text[:-1])
 
 
 	def decrypt(self, encrypted_filename : str, keys_filename : str):
@@ -238,15 +247,12 @@ class CBC_Mode:
 		decrypted_text = ""
 		# Store the encrypted dat in blocks
 		encrypted_data = self.__read_encrypted_data(encrypted_filename)
+		keys = self.__read_encrypted_data(keys_filename)
 
-
-		with open(keys_filename, "r") as reader:
-			# Get the keys 
-			keys = reader.read().split("&")
-			# IV is the value that will be XORed with each block
-			iv = keys[0]
-			# Store the key used in vigenere
-			key = keys[1]
+		# IV is the value that will be XORed with each block
+		iv = keys[0]
+		# Store the key used in vigenere
+		key = keys[1]
 
 		vigenere_cipher = VigenereCipher()
 
@@ -269,6 +275,7 @@ class CBC_Mode:
 				# Transform from int to char
 				decrypted_text += chr(letter)
 		# Write the decrypted text in a textfile
-		self.__writeText("decrypted.txt", decrypted_text)
+		decrypted_filename = input("Input the filename (with extension) that will store the decrypted text: ")
+		self.__writeText(decrypted_filename, decrypted_text)
 
 
