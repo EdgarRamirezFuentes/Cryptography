@@ -6,6 +6,7 @@
  */ 
 #include "./GaloisFields.hpp"
 #include <cmath>
+#include <iostream>
 
 /**
  * Get the result of f(x) XOR g(x)
@@ -79,7 +80,39 @@ unsigned long GaloisFields::multiplication(unsigned long f,unsigned long g, unsi
 void GaloisFields::calculate_multiplication_table (unsigned long grade, std::vector<std::vector<unsigned long>>& multiplication_table) {
     // Irreducible polynomial used to calculate the multiplication table
     unsigned long ip = 0;
+    // It is decremented by one because the matrix goes from 0 up to (2^n - 1)
+    unsigned long table_size = (unsigned long) (pow((unsigned long) 2, grade) - 1);
     GaloisFields::get_irreducible_polynomial(ip, grade);
+    for (unsigned long row = 0; row <= table_size; row++) {
+        for (unsigned long col = 0; col <= table_size; col++) { 
+            multiplication_table[row][col] = GaloisFields::multiplication(row, col, ip, grade);
+        }
+    }
+}
+
+/**
+ * Show the multiplication table of GF(2^n) in its hexadecimal representation
+ * @param grade is the grade of GF(2^n) and this must be greater or equal to 1.
+ */ 
+void GaloisFields::show_multiplication_table(unsigned long grade) {
+    unsigned long table_size = (unsigned long) pow((unsigned long) 2, grade);
+    std::vector<std::vector<unsigned long>> multiplication_table(table_size, std::vector<unsigned long>(table_size, 0));
+    GaloisFields::calculate_multiplication_table(grade, multiplication_table);
+    std::cout << "Multiplication table of GF(2^" << grade << "):\n";
+    GaloisFields::print_multiplication_table(multiplication_table);
+}
+
+/**
+ * Print the multiplication table of GF(2^n) in its hexadecimal representation
+ * @param multiplication_table is a matrix that contains the values of the multiplication table of GF(2^n)
+ */ 
+void GaloisFields::print_multiplication_table(const std::vector<std::vector<unsigned long>>& multiplication_table) {
+    for (auto row : multiplication_table) {
+        for (auto col : row) {
+            std::cout << " | " << std::hex << col;
+        }
+        std::cout << " |\n";
+    }
 }
 
 /**

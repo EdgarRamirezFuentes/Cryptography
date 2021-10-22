@@ -10,7 +10,7 @@
 
 int main(void) {
     GaloisFields galoisfield;
-    unsigned long f = 2;
+    /*unsigned long f = 2;
     unsigned long g = 21;
     unsigned long ip = 67;
     unsigned long  grade = 6;
@@ -22,6 +22,8 @@ int main(void) {
     ip = 19;
     grade = 4;
     product =  galoisfield.multiplication(f, g, ip, grade);
-    std::cout << std::bitset<4>(f) << " * " << std::bitset<4>(g) << " = " << std::bitset<4>(product) << std::endl; 
+    std::cout << std::bitset<4>(f) << " * " << std::bitset<4>(g) << " = " << std::bitset<4>(product) << std::endl; */
+    // Show the multiplication table of GF(2^3) in hexadecimal
+    galoisfield.show_multiplication_table(3);
     return 0;
 }
