@@ -5,6 +5,7 @@
  * Last update: 10/20/2021
  */ 
 #include "./GaloisFields.hpp"
+#include <cmath>
 
 /**
  * Get the result of f(x) XOR g(x)
@@ -41,7 +42,8 @@ unsigned long GaloisFields::substraction(unsigned long f, unsigned long g) {
  * @param f is the first polynomial that belongs to the galois field
  * @param g is the second polynomial that belongs to the galois field
  * @param ip is the irreducible polynomial (bits representation)
- *  
+ * @param grade is the grade of GF(2^n)
+ * @return the product of f(x) . g(x)
  */ 
 unsigned long GaloisFields::multiplication(unsigned long f,unsigned long g, unsigned long ip, unsigned long grade) {
     unsigned long product = 0;
@@ -67,4 +69,44 @@ unsigned long GaloisFields::multiplication(unsigned long f,unsigned long g, unsi
         g >>= 1;
     }
     return product;
+}
+
+/**
+ * Calculate the multiplication table of GF(2^n)
+ * @param grade is the grade of GF(2^n)
+ * @param multiplication_table is the table that will store the values of the multiplication table that belongs to GF(2^n)
+ */ 
+void GaloisFields::calculate_multiplication_table (unsigned long grade, std::vector<std::vector<unsigned long>>& multiplication_table) {
+    // Irreducible polynomial used to calculate the multiplication table
+    unsigned long ip = 0;
+    GaloisFields::get_irreducible_polynomial(ip, grade);
+}
+
+/**
+ * Get an possible irreducible polynomial of GF(2^n)
+ * @param ip is the variable that will store the irreducible polynomial
+ * @param grade is the grade of GF(2^n)
+ */ 
+void GaloisFields::get_irreducible_polynomial(unsigned long& ip, const unsigned long& grade) {
+    // Binary representation of the x + 1 polynomial
+    ip = 3;
+
+    // One of the irreducible polynomials of 2^1 is x + 1
+    if (grade == 1) {return;}
+
+    /*
+        Set the bit that belongs to the grade
+        i.e.
+        ip = 3 = 11 (bynary) = x + 1 
+        if the grade is n, a possible irreducible polynomial could be x^n + x + 1
+        So, in order to get the desired irreducible polynomial it is needed to set the nth bit in ip
+        i.e. grade = 5
+        ip = 11 (binary value)
+        ip or 1 << n will get the desired irreducible polynomial
+        100000
+        000011
+        -------
+        100011 = x^5 + x + 1 -> Possible irreducible polynomial
+    */ 
+    ip |= 1 << grade;
 }
