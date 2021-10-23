@@ -1,29 +1,12 @@
 /**
- * Main function to use the Galois fields class
+ * Main function run the program.
  * name: main.cpp
  * Author: Edgar Alejandro Ramírez Fuentes
- * Last update: 10/20/2021
+ * Last update: 10/23/2021
  */ 
-#include "./classes/GaloisFields.cpp"
-#include <iostream>
-#include <bitset>
+#include "./classes/app.cpp"
 
 int main(void) {
-    GaloisFields galoisfield;
-    /*unsigned long f = 2;
-    unsigned long g = 21;
-    unsigned long ip = 67;
-    unsigned long  grade = 6;
-    unsigned long product =  galoisfield.multiplication(f, g, ip, grade);
-    std::cout << std::bitset<6>(f) << " * " << std::bitset<6>(g) << " = " << std::bitset<6>(product) << std::endl; 
-
-    f = 13;
-    g = 6;
-    ip = 19;
-    grade = 4;
-    product =  galoisfield.multiplication(f, g, ip, grade);
-    std::cout << std::bitset<4>(f) << " * " << std::bitset<4>(g) << " = " << std::bitset<4>(product) << std::endl; */
-    // Show the multiplication table of GF(2^3) in hexadecimal
-    galoisfield.show_multiplication_table(3);
+    run();
     return 0;
 }
