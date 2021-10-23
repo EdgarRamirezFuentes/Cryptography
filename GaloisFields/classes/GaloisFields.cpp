@@ -109,7 +109,7 @@ void GaloisFields::show_multiplication_table(unsigned long grade) {
 void GaloisFields::print_multiplication_table(const std::vector<std::vector<unsigned long>>& multiplication_table) {
     for (auto row : multiplication_table) {
         for (auto col : row) {
-            std::cout << " | " << std::hex << col;
+            std::cout << " | " << "0x" << std::hex << col;
         }
         std::cout << " |\n";
     }
