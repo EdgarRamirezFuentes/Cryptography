@@ -25,7 +25,8 @@ void run() {
  * @return true if the input is valid, false otherwise.
  */ 
 bool validate_input(const std::string& input) {
-    return std::regex_match(input, std::regex("^[a-fA-F0-9]+"), std::regex_constants::match_not_eol);
+    // It only accepts hexadecimal numbers that fit in an unsigned long int variable (4 bytes)
+    return std::regex_match(input, std::regex("^[a-fA-F0-9]{1,4}$"), std::regex_constants::match_not_eol);
 }
 
 /**
@@ -88,15 +89,15 @@ void multiplication() {
     GaloisFields gf;
     std::cout << "Multiplication" << std::endl;
     std::cout << "==============" << std::endl;
-    std::cout << "Enter the polynomial f(x) in its hexadecimal representation: ";
+    std::cout << "Enter the polynomial f(x) in its hexadecimal representation at most 4 digits: ";
     std::cin >> f_str;
     transform(f_str.begin(), f_str.end(), f_str.begin(), ::toupper);
-    std::cout << "Enter the polynomial g(x) in its hexadecimal representation: ";
+    std::cout << "Enter the polynomial g(x) in its hexadecimal representation at most 4 digits: ";
     std::cin >> g_str;
     transform(g_str.begin(), g_str.end(), g_str.begin(), ::toupper);
     std::cout << "Enter the grade of the field: ";
     std::cin >> grade;
-    std::cout << "Enter the irreducible polynomial in its hexadecimal representation: ";
+    std::cout << "Enter the irreducible polynomial in its hexadecimal representation at most 4 digits: ";
     std::cin >> ip_str;
     transform(ip_str.begin(), ip_str.end(), ip_str.begin(), ::toupper);
 
@@ -127,10 +128,10 @@ void addition () {
     unsigned long f, g;
     std::string f_str, g_str;
     GaloisFields gf;
-    std::cout << "Enter the polynomial f(x) in its hexadecimal representation: ";
+    std::cout << "Enter the polynomial f(x) in its hexadecimal representation at most 4 digits: ";
     std::cin >> f_str;
     transform(f_str.begin(), f_str.end(), f_str.begin(), ::toupper);
-    std::cout << "Enter the polynomial g(x) in its hexadecimal representation: ";
+    std::cout << "Enter the polynomial g(x) in its hexadecimal representation at most 4 digits: ";
     std::cin >> g_str;
     transform(g_str.begin(), g_str.end(), g_str.begin(), ::toupper);
 
@@ -160,10 +161,10 @@ void substraction () {
     unsigned long f, g;
     std::string f_str, g_str;
     GaloisFields gf;
-    std::cout << "Enter the polynomial f(x) in its hexadecimal representation: ";
+    std::cout << "Enter the polynomial f(x) in its hexadecimal representation at most 4 digits: ";
     std::cin >> f_str;
     transform(f_str.begin(), f_str.end(), f_str.begin(), ::toupper);
-    std::cout << "Enter the polynomial g(x) in its hexadecimal representation: ";
+    std::cout << "Enter the polynomial g(x) in its hexadecimal representation at most 4 digits: ";
     std::cin >> g_str;
     transform(g_str.begin(), g_str.end(), g_str.begin(), ::toupper);
 
