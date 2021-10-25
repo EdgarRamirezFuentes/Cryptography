@@ -26,7 +26,7 @@ void run() {
  */ 
 bool validate_input(const std::string& input) {
     // It only accepts hexadecimal numbers that fit in an unsigned long int variable (4 bytes)
-    return std::regex_match(input, std::regex("^[a-fA-F0-9]{1,4}$"), std::regex_constants::match_not_eol);
+    return std::regex_match(input, std::regex("^[a-fA-F0-9]{1,4}"), std::regex_constants::match_not_eol);
 }
 
 /**
