@@ -113,15 +113,16 @@ class HashFunction:
         binary_representation = ''
         for character in block:
             # Get the binary representation of the ASCII character value and oncatenate it ot the block bits representation
-            binary_representation += format(ord(character), 'b')
+            # Add the necesary 0's to complete the 8 bits in the bits representation
+            binary_representation += ('0' * len(format(ord(character), 'b'))) + format(ord(character), 'b')
         '''
             Store the integer value that belongs to the bits representation
             e.g
             block = "AB"
             A = 65 = 1000001
             B = 66 = 1000010
-            bits representation of the block = 10000011000010
-            integer = 8386
+            bits representation of the block = 0100000101000010
+            integer = 16706
         '''
         integer_representation = int(binary_representation, 2)
         return integer_representation
