@@ -2,14 +2,19 @@
     Hash functions laboratory
 
     Implementation of a hash function using the XOR operation
+    This version only hashes the content of a textfile
 
     Authors:
     - Ramírez Fuentes Edgar Alejandro
     - Salmerón Contreras María José
 '''
+
+import textwrap
+import random
+
 class HashFunction:
     '''
-        Hash function class used to hash characters contained in the Extended ASCII code
+        Hash function class used to hash only characters contained in the Extended ASCII code
     '''
     def __init__(self, block_size : int = 8) -> None:
         '''
@@ -27,8 +32,6 @@ class HashFunction:
             e.g 6 and 8
             6 = 110 5 = 101, 110 & 101 = 100
             8 = 1000 7 = 0111, 1000 & 0111 = 0000
-
-            If these 
         '''
         self.__block_size = block_size if block_size >= 8 and ( (block_size & (block_size - 1)) == 0) else 8
 
@@ -45,68 +48,6 @@ class HashFunction:
         '''
         return self.__block_size
 
-
-    def __set_bit(self, position : int, bits : int) -> int:
-        '''
-            Set the bit placed in the given position in the provided bits string.
-
-            Parameters
-            -----------
-            position : int
-                It represents the bit position that will be set
-
-            bits : int
-                It is the bits string that will be modified
-
-            Returns
-            -----------
-            bits : int
-                It is the modified bits string
-        '''
-        bits |= (1 << position)
-        return bits
-
-
-    def __unset_bit(self, position : int, bits : int) -> int:
-        '''
-            Unset the bit placed in the given position in the provided bits string.
-
-            Parameters
-            -----------
-            position : int
-                It represents the bit position that will be unset
-
-            bits : int
-                It is the bits string that will be modified
-
-            Returns
-            -----------
-            bits : int
-                It is the modified bits string
-        '''
-        bits &= ~(1 << position)
-        return bits
-
-
-    def __get_bit_state(self, position : int, bits : int) -> int:
-        '''
-            Get the bit state in the given position in the provided bits string
-
-            Parameters
-            -----------
-            position : int
-                It represents the bit position that will be checked
-
-            bits : int
-                It is the bits string that contains the bit
-
-            Returns
-            -----------
-            bits : int
-                It is the bit status.
-        '''
-        bits &= (1 << position)
-        return bits
 
     def __get_data(self, textfile : str) -> str:
         '''
@@ -126,36 +67,7 @@ class HashFunction:
         with open(textfile, 'r') as file:
             data = file.read()
         return data
-    
-    # XOR function from scratch using 
-    def __XOR(self, digest : int, block : int):
-        '''
-            XOR the current digest of the hash function with the block provided
 
-            Parameter
-            -----------
-
-            digest : int 
-                It is the current digest of the hash function
-
-            Return : int
-                It is the result of XOR digest with the block provided 
-        '''
-        for bit_position in range(self.__block_size):
-            '''
-                If the bits have the same status, that bit will be unset, otherwise the bit will be set
-                1 XOR 1 = 0
-                0 XOR 0 = 0
-                1 XOR 0 = 1
-                0 XOR 1 = 1
-            '''
-            # Get the status of the bit at the current position
-            digest_bit_status = 0 if not self.__get_bit_state(bit_position, digest) else 1
-            block_bit_status = 0 if not self.__get_bit_state(bit_position, block) else 1
-
-            digest = self.__set_bit(bit_position, digest) if (digest_bit_status != block_bit_status) else self.__unset_bit(bit_position, digest)
-        return digest
-    
 
     def hash_data(self, filenme : str) -> None:
         '''
@@ -167,29 +79,77 @@ class HashFunction:
             filename : str
                 It is the filename (with extension) that contains the data to be hashed
         '''
-        # Get the data from the textfile
-        data = self.__get_data(filenme)
+        # Get the data from the textfile with padding added if necessary to fulfill the block size
+        data = self.__get_blocks(self.__get_data(filenme))
 
         # The resulting digest
         digest = 0
-
-        # Each letter is a block
-        for letter in data:
-            letter_ascii = ord(letter)
-            '''
-                Use the XOR operation built from scratch
-            digest = self.__XOR(digest, letter_ascii)
-            '''
-            # XORing each bit of the current block with the digest
-            digest = (digest ^ letter_ascii)
         
-        print("Resulting digest")
-        print(f"Binary representation: {format(digest, 'b')}")
-        print(f"Hexadecimal representation: {hex(digest)} ")
-        # Print the blocks that are 0's eg. 3 with a block size of 8 = 0x03
+        # Process each block of the data to hash it
+        for block in data:
+            digest ^= self.__block_to_bits(block)
+        print("Digest")
         self.__digest_to_binary(digest)
-        # Print the unset bits before the most significant bit eg. 3 with a block size of 8 = 00000011
         self.__digest_to_hexadecimal(digest)
+
+
+    def __block_to_bits(self, block : str):
+        '''
+            Transform a block of characters to its bits representation
+            
+            Parameters
+            -----------
+            block : str 
+                It is the characters contained in the block to be converted to its bits representation
+                
+            Returns
+            ----------
+            integer_representation : int
+                It is the integer that represents the bits representation
+            
+            
+        '''
+        # Store the bits representation in string
+        binary_representation = ''
+        for character in block:
+            # Get the binary representation of the ASCII character value and oncatenate it ot the block bits representation
+            binary_representation += format(ord(character), 'b')
+        '''
+            Store the integer value that belongs to the bits representation
+            e.g
+            block = "AB"
+            A = 65 = 1000001
+            B = 66 = 1000010
+            bits representation of the block = 10000011000010
+            integer = 8386
+        '''
+        integer_representation = int(binary_representation, 2)
+        return integer_representation
+
+
+    def __get_blocks(self, data : str) -> list:
+        '''
+            Divide the data provided in block to process them in the hash function
+            
+            Parameters
+            ----------
+            
+            data : str
+                It is the data that will be divided in blocks
+                
+            Returns
+            --------
+            
+            data : list 
+                It is a list of strings that represent the blocks to be processed in the hash function
+        '''
+        char_per_block = self.__block_size // 8
+        data = textwrap.wrap(data, char_per_block)
+        # Add padding to the last block if necessary
+        if len(data[-1]) < char_per_block:
+            # Concatenate the missing characters to fulfill the blocksize
+            data[-1] += '.' * (char_per_block - len(data[-1]))
+        return data
 
 
     def __digest_to_hexadecimal(self, digest : int) -> None:
